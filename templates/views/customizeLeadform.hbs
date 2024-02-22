@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <style>
+        dialog {
+            width: 40%;
+            min-height: 30%;
+            position: absolute;
+            border: 1px solid lightgray;
+            border-radius: 10px;
+            padding: 20px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        label {
+            margin-bottom: 0.2rem !important;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .new-class {
+            text-transform: capitalize;
+        }
+
+        #lableName {
+            border: 1px solid rgb(185, 185, 185);
+            height: 40px;
+        }
+
+        .form-control {
+            height: 40px !important;
+            border: 1px solid rgb(235, 233, 233);
+        }
+    </style>
+</head>
+
+<body class="vertical  light  ">
+    <div class="wrapper">
+        {{>Sidebar}}
+        <main role="main" class="main-content">
+            <div class="content-body">
+                <div class="container-fluid">
+                    <div class="col-lg-8 col-mg-8  col-12 shadow-sm rounded-2 p-4" style="background-color: #FFFF;">
+                        <div class=" bg-transparent box-shadow-none">
+                            <form
+                                class="mainForm leadForm p-0 col-12 col-md-12 w-full d-flex flex-wrap justify-content-between "
+                                style="column-gap:30px;">
+                                <div class="mb-2 col-12 col-md-5">
+                                    <label for="exampleInputEmail1" class="form-label">Lead Name <span
+                                            class="font-w900 text-danger">*</span> </label>
+                                    <input type="text" class="form-control" id="leadName" name="leadName"
+                                        aria-describedby="emailHelp" required />
+
+                                </div>
+                                <div class="mb-2 col-12 col-md-5">
+                                    <label for="select" class="form-label">Company Name <span
+                                            class="font-w900 text-danger">*</span></label>
+                                    <select id="selectCompany" name="companyName" class="form-control" required>
+                                        <option value="" selected> Select the Company Name</option>
+                                        <option>Shubham Mart</option>
+                                        <option>Hindustan Petrol</option>
+                                        <option>Miles store</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-2 col-12 col-md-5">
+                                    <label for="exampleInputEmail1" class="form-label">Contact Number <span
+                                            class="font-w900 text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="contactNum" name="contactNum"
+                                        aria-describedby="emailHelp" required />
+                                </div>
+                                <div class="mb-2 col-12 col-md-5">
+                                    <label for="exampleInputEmail1" class="form-label">Contact Email <span
+                                            class="font-w900 text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="contactNum" autocomplete="off"
+                                        name="contactemail" aria-describedby="emailHelp" required />
+                                </div>
+                                <div class="mb-3 col-12 col-md-5">
+                                    <label for="select" class="form-label">Lead Status <span
+                                            class="font-w900 text-danger">*</span></label>
+                                    <select id="selectstatus" name="selectstatus" class="form-control" required>
+                                        <option value=""> Select Lead Status</option>
+                                        <option>Pending</option>
+                                        <option>Denied </option>
+                                        <option>Approval</option>
+                                    </select>
+                                </div>
+
+                            </form>
+                            <div class="d-flex gap-2 col-md-12 col-12">
+                                <button type="submit" id="leadSubmitBtn"
+                                    class=" btn btn-primary btn-md rounded-1 mt-2">Submit</button>
+                                {{!-- {{#if isAdmin}}
+                                <button type="button" class="addField btn btn-primary btn-sm rounded-1 mt-2">Add
+                                    Field</button>
+                                {{else}}
+                                {{/if}} --}}
+                                <button type="button" class="addField btn ml-3 btn-primary btn-md rounded-1 mt-2">Add
+                                    Field</button>
+                            </div>
+                            <dialog autofocus="true" class="col-md-3 col-10 m-0">
+                                <div class="closeBtn float-end d-block " style="width: 25px;float:right">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path11         1
+                                            d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 10.5858L14.8284 7.75736L16.2426 9.17157L13.4142 12L16.2426 14.8284L14.8284 16.2426L12 13.4142L9.17157 16.2426L7.75736 14.8284L10.5858 12L7.75736 9.17157L9.17157 7.75736L12 10.5858Z">
+                                        </path11>
+                                    </svg>
+                                </div>
+
+                                <div class="content mt-1 w-100">
+                                    {{!-- making for custom field's --}}
+                                    <form class="customFieldForm py-2">
+                                        <label for="customField" class="form-label h3 font-w500">Custom Field</label>
+                                        <div class="wrapper-div px-0 d-flex align-items-center col-md-12 col-12 flex-wrap py-2"
+                                            style="gap: 10px;">
+                                            <div
+                                                class="d-flex align-items-center col-md-2 col-3 justify-content-start ">
+                                                <label for="textField1" class="m-0 font-w500">Date</label>
+                                                <input type="radio" name="fields" class="mx-2 rounded" id="textField1"
+                                                    value="date">
+                                            </div>
+                                            <div class="d-flex align-items-center col-md-2 col-3 justify-content-start">
+                                                <label for="textField2" class="m-0 font-w500">Text</label>
+                                                <input type="radio" name="fields" class="mx-2 rounded" id="textField2"
+                                                    value="text">
+                                            </div>
+                                            <div
+                                                class="d-flex align-items-center col-md-3   col-3 justify-content-start">
+                                                <label for="textField3" class="m-0 font-w500">Number</label>
+                                                <input type="radio" name="fields" class="mx-2 rounded" id="textField3"
+                                                    value="number">
+                                            </div>
+                                            <div class="d-flex align-items-center col-md-2 col-3 justify-content-start">
+                                                <label for="textField3" class="m-0 font-w500">Email</label>
+                                                <input type="radio" name="fields" class="mx-2 rounded" id="textField4"
+                                                    value="email">
+                                            </div>
+                                        </div>
+
+                                        <div class="my-2 mb-2">
+                                            <label for="lableName" class="form-label">Label Name</label>
+                                            <input type="text" class="form-control  mb-1 mt-1" name="labelValue"
+                                                id="lableName" placeholder="Enter the label name">
+                                        </div>
+                                        <button type="submit"
+                                            class="w-100 btn btn-primary btn-sm rounded-1 mt-2 fieldBtn">Submit</button>
+                                    </form>
+
+                                </div>
+
+
+                            </dialog>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src='js/daterangepicker.js'></script>
+    <script src='js/jquery.stickOnScroll.js'></script>
+    <script src="js/tinycolor-min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.all.min.js"></script>
+    <script src="js/datamaps-zoomto.js"></script>
+    <script src="js/datamaps.custom.js"></script>
+    <script src="js/Chart.min.js"></script>
+    <script>
+        /* defind global options */
+        Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+        Chart.defaults.global.defaultFontColor = colors.mutedColor;
+    </script>
+    <script src="js/gauge.min.js"></script>
+    <script src="js/jquery.sparkline.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/apexcharts.custom.js"></script>
+    <script src='js/jquery.mask.min.js'></script>
+    <script src='js/select2.min.js'></script>
+    <script src='js/jquery.steps.min.js'></script>
+    <script src='js/jquery.validate.min.js'></script>
+    <script src='js/jquery.timepicker.js'></script>
+    <script src='js/dropzone.min.js'></script>
+    <script src='js/uppy.min.js'></script>
+    <script src='js/quill.min.js'></script>
+    <script src='js/new.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/muuri@0.9.5/dist/muuri.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web-animations-js@2.3.2/web-animations.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script src="js/apps.js"></script>
+
+
+
+
+<script>
+    const leadSubmitBtn = document.querySelector("#leadSubmitBtn");
+    leadSubmitBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await getLeadData();
+    });
+
+    async function getLeadData() {
+        const form = document.querySelector('.leadForm');
+        const formData = new FormData(form);
+
+        // Check if any field is null
+        let fieldsAreValid = true;
+        formData.forEach((value) => {
+            if (!value) {
+                fieldsAreValid = false;
+            }
+        });
+
+        if (!fieldsAreValid) {
+            // Show error message if any field is null
+            Toastify({
+                text: "Please fill in all fields",
+                gravity: "top",
+                duration: 3000,
+                close: true,
+                style: {
+                    width: '30%'
+                },
+                backgroundColor: "red",
+                position: "center"
+            }).showToast();
+            return; // Stop further execution
+        }
+
+        const obj = Object.fromEntries(formData);
+        console.log(obj);
+
+        try {
+            const res = await fetch('/lead_data', {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify(obj)
+            });
+            const response = await res.json();
+            console.log(response);
+
+            if (response.success) {
+                Toastify({
+                    text: "Data stored successfully",
+                    gravity: "top",
+                    duration: 3000,
+                    close: true,
+                    style: {
+                        width: '30%'
+                    },
+                    position: "center"
+                }).showToast();
+
+                // Refresh the page after successful submission
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error('Failed to store data');
+            }
+        } catch (error) {
+            console.error(error);
+            // Show error message
+            Toastify({
+                text: "Failed to store data",
+                gravity: "top",
+                duration: 3000,
+                close: true,
+                style: {
+                    width: '30%'
+                },
+                backgroundColor: "red",
+                position: "center"
+            }).showToast();
+        }
+    }
+</script>
+
+
+
+
+
+    <script>
+        const btn = document.querySelector(".addField")
+        const dialog = document.querySelector("dialog")
+        const closeBtn = document.querySelector(".closeBtn")
+        btn.addEventListener('click', () => {
+            dialog.showModal()
+            window.scrollTo({
+                behavior: 'smooth',
+                top: 0,
+                left: 0
+
+            })
+        })
+        closeBtn.addEventListener('click', function () {
+            dialog.close()
+        })
+    </script>
+
+    <script>
+
+        window.onload = async function () {
+            try {
+                const res = await fetch('/sendCustomField', {
+                    method: 'GET',
+                });
+                const data = await res.json();
+                console.log(data, 123);
+                inputFieldAppendData(data);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        function inputFieldAppendData(data) {
+            const useGroup = localStorage.getItem('userGroup');
+            const form = document.querySelector('.mainForm');
+
+            data.data.forEach(item => {
+                
+                const fieldHtml = `
+        <div class="mb-2 col-12 col-md-5" style="position:relative">
+            <i class="delete-icon ri-close-circle-line" style="position:absolute;right:20px;top:0px;font-size:17px"></i>
+            <label for="${item.divId}" class="form-label new-class">${item.labelName}</label>
+                <input type="${item.type}" class="form-control customGenrateRow" id="${item.divId}" name="${item.labelName.trim()}">
+        </div>
+    `;
+                form.insertAdjacentHTML('beforeend', fieldHtml);
+            });
+
+            // Attach event listeners to delete icons
+            const deleteIcons = document.querySelectorAll('.delete-icon');
+            deleteIcons.forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const inputElement = this.parentElement.querySelector('input');
+                    
+                    if (inputElement) {
+                        const id = inputElement.getAttribute('id');
+                        console.log("Input Element:", inputElement);
+                        console.log("ID:", id);
+                        deleteFromDatabase(id);
+                        this.parentElement.remove();
+                    } else {
+                        console.log("Input element not found.");
+                    }
+                });
+            });
+
+        }
+
+
+    </script>
+
+    <script>
+        const customForm = document.querySelector('.fieldBtn');
+        customForm.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const radios = document.getElementsByName('fields');
+            let radioVal;
+            for (var radio of radios) {
+                radio.checked ? radioVal = radio.value : null;
+            }
+
+            const labelVal = document.getElementById('lableName').value;
+            const labelIdElement = document.querySelector('.customGenrateRow');
+            const customId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+       
+            const labelId = customId;
+
+            try {
+                const res = await fetch('/sendCustomField', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        labelName: labelVal,
+                        name: radioVal,
+                        divId: labelId,
+                        type: radioVal
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('Field Added Successfully');
+                }
+                location.reload();
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+
+    <script>
+        function deleteItem(id) {
+            console.log('ID:', id); // Log the id parameter
+
+            deleteFromDatabase(id);
+        }
+
+        function deleteFromDatabase(id) {
+            fetch(`/sendCustomField/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // No need to stringify the body, as the id is already in the URL
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Item deleted successfully');
+                    // Optionally, you can perform further actions after successful deletion
+                })
+                .catch(error => {
+                    console.error('There was a problem deleting the item:', error);
+                });
+        }
+
+    </script>
+
+
+
+
+</body>
+
+</html>
