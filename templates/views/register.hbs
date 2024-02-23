@@ -602,7 +602,7 @@
 </script>
 
 {{!-- OTP verification --}}
-{{!-- <script>
+<script>
   document.querySelector('.otpBtn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     if (!email) {
@@ -657,25 +657,11 @@
       }).showToast();
     }
   })
-</script> --}}
+</script>
 
 
 
 
-{{!-- // focus on the next field --}}
-{{!--
-<script>
-  const fields = document.querySelectorAll('.inputContainer input');
-  fields.forEach((item, index) => {
-    item.addEventListener('input', (event) => {
-      if (event.target.value.length === 1) {
-        if (index < fields.length - 1) {
-          fields[index + 1].focus();
-        }
-      }
-    });
-  });
-</script> --}}
 
 
 <script>
@@ -717,6 +703,35 @@
       }).showToast();
     }
   })
+</script>
+
+
+ {{!-- focus on the next field   --}}
+
+<script>
+  const fields = document.querySelectorAll('.inputContainer input');
+  fields.forEach((item, index) => {
+    item.addEventListener('input', (event) => {
+    const val = event.target.value;
+      if(val.length > 1){
+        event.target.value = val.slice(0, 1);
+      } else if(val.length === 1){
+        fields[index + 1]?.focus();
+      }
+    });
+    item.addEventListener('keyup',(e)=>{
+      const target = e.target;
+      const key = e.key.toLowerCase()
+      if(key == "backspace" || key == "delete"){
+        target.value =""
+        const prev = target.previousElementSibling;
+        if(prev){
+          prev.focus();
+        }
+        return;
+      }
+    })
+  });
 </script>
 
 
