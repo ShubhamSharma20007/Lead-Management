@@ -12,6 +12,7 @@ const { Op } = require('sequelize');
 const randomString =  require('randomstring')
 const nodemailer = require('nodemailer');
 const isAuth = require('../Middlewares/isAuth');
+const selecteModal = require("../models/TargetSelectModel")
 
 // login get request
 router.get("/", function (req, res, next) {
@@ -305,5 +306,51 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ success: false, error: error.message });
     }
 });
+
+
+
+
+// select dropdown router 
+// POST : /selecteModal
+// Where  used  : customizeLeadForm
+// model  : SelectDataModal
+
+router.post("/selectoption", async (req, res) => {
+    try {
+      const { dropdownInput } = req.body;
+      if(!dropdownInput){
+        return res.status(400).json({ error: "Please enter a valid input" });
+      }
+      console.log(dropdownInput)
+      const modal = await selecteModal.create({
+        labelName :dropdownInput,
+        value : dropdownInput
+      })
+      return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
+      
+    }catch(err){
+      return res.status(400).json({ success: false, error: err.message });
+
+    }
+})
+
+// select dropdown router 
+// GET : /selecteModal
+// Where  used  : customizeLeadForm
+// model  : SelectDataModal
+
+router.get("/selectoption", async (req, res) => {
+    try {
+      console.log(1234567)
+      const modal =  await selecteModal.findAll();
+      console.log(modal)
+      return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
+    } catch (error) {
+      return res.status(400).json({ success: false, error: error.message });
+      
+    }
+})
+
+
 
 module.exports = router;

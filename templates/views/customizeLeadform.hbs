@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 
+
 <head>
     <style>
         dialog {
@@ -13,6 +14,10 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
+        }
+
+        .input-section {
+            display: none;
         }
 
         label {
@@ -93,6 +98,32 @@
                                     </select>
                                 </div>
 
+
+
+                                <div class="mb-3 col-12 col-md-5">
+                                    <label for="select" class="form-label">Target Field <span
+                                            class="font-w900 text-danger">*</span><i
+                                            class="ri-add-circle-line ml-1 plusSelectField"
+                                            style="cursor: pointer;"></i></span></label>
+                                    <div class="input-section">
+                                        <div class="input-group input-group-sm mb-3">
+                                            <input name="inputvalue" type="text" class="form-control dropdown-input"
+                                                aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                                            <div class="input-group-prepend">
+                                                <span
+                                                    class="input-group-text bg-primary dropdown-input-add-btn  text-white "
+                                                    id="inputGroup-sizing-sm " style="cursor: pointer;">Add</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <select id="targetStatus" name="targetStatus" class="form-control target-status"
+                                        required>
+                                        <option value="" selected> Select Lead Status</option>
+                                        {{!-- Value comes dynamically --}}
+
+                                    </select>
+                                </div>
+
                             </form>
                             <div class="d-flex gap-2 col-md-12 col-12">
                                 <button type="submit" id="leadSubmitBtn"
@@ -107,10 +138,11 @@
                             </div>
                             <dialog autofocus="true" class="col-md-3 col-10 m-0">
                                 <div class="closeBtn float-end d-block " style="width: 25px;float:right">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path11         1
-                                            d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 10.5858L14.8284 7.75736L16.2426 9.17157L13.4142 12L16.2426 14.8284L14.8284 16.2426L12 13.4142L9.17157 16.2426L7.75736 14.8284L10.5858 12L7.75736 9.17157L9.17157 7.75736L12 10.5858Z">
-                                        </path11>
+                                    <svg style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                        fill="currentColor">
+                                        <path
+                                            d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+                                        </path>
                                     </svg>
                                 </div>
 
@@ -149,6 +181,7 @@
                                             <input type="text" class="form-control  mb-1 mt-1" name="labelValue"
                                                 id="lableName" placeholder="Enter the label name">
                                         </div>
+
                                         <button type="submit"
                                             class="w-100 btn btn-primary btn-sm rounded-1 mt-2 fieldBtn">Submit</button>
                                     </form>
@@ -205,92 +238,159 @@
 
 
 
+    {{!-- toggle select field --}}
+    <script>
+        const toggleBtn = document.querySelector('.plusSelectField')
+        const inputSection = document.querySelector('.input-section')
 
-<script>
-    const leadSubmitBtn = document.querySelector("#leadSubmitBtn");
-    leadSubmitBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        await getLeadData();
-    });
-
-    async function getLeadData() {
-        const form = document.querySelector('.leadForm');
-        const formData = new FormData(form);
-
-        // Check if any field is null
-        let fieldsAreValid = true;
-        formData.forEach((value) => {
-            if (!value) {
-                fieldsAreValid = false;
+        var flag = true;
+        toggleBtn.addEventListener('click', () => {
+            if (flag) {
+                inputSection.style.display = 'block';
+                flag = false
             }
-        });
+            else {
+                inputSection.style.display = 'none';
+                flag = true
+            }
+        })
+        // appending the data from input
+        const dropdownAddBtn = document.querySelector('.dropdown-input-add-btn')
+        dropdownAddBtn.addEventListener('click', async () => {
+            const dropdownInput = document.querySelector('.dropdown-input').value;
+            const targetStatus = document.querySelector('#targetStatus');
 
-        if (!fieldsAreValid) {
-            // Show error message if any field is null
-            Toastify({
-                text: "Please fill in all fields",
-                gravity: "top",
-                duration: 3000,
-                close: true,
-                style: {
-                    width: '30%'
-                },
-                backgroundColor: "red",
-                position: "center"
-            }).showToast();
-            return; // Stop further execution
-        }
-
-        const obj = Object.fromEntries(formData);
-        console.log(obj);
-
-        try {
-            const res = await fetch('/lead_data', {
+            // Post API on Click :/selectoption
+            const res = await fetch("/selectoption", {
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 method: 'POST',
-                body: JSON.stringify(obj)
+                body: JSON.stringify({ dropdownInput })
             });
-            const response = await res.json();
-            console.log(response);
+            const successData = await res.json()
+            console.log(successData)
+            try {
+                if (successData.success === true) {
+                    location.reload()
+                }
+                else{
+                    alert(successData.error)
+                }
+            }
+            catch (err) {
+                console.log(err)
+            }
 
-            if (response.success) {
+        });
+
+
+
+        window.addEventListener('load', async function () {
+            try {
+                const response = await fetch('/selectoption');
+                const data = await response.json();
+                const targetStatus = document.querySelector('.target-status');
+                data?.data.forEach((item) => {
+                    const option = document.createElement('option');
+                    option.value = item.labelName;
+                    option.textContent = item.labelName;
+                    targetStatus.appendChild(option);
+                })
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+    </script>
+
+
+
+    <script>
+        const leadSubmitBtn = document.querySelector("#leadSubmitBtn");
+        leadSubmitBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await getLeadData();
+        });
+
+        async function getLeadData() {
+            const form = document.querySelector('.leadForm');
+            const formData = new FormData(form);
+
+            // Check if any field is null
+            let fieldsAreValid = true;
+            formData.forEach((value) => {
+                if (!value) {
+                    fieldsAreValid = false;
+                }
+            });
+
+            if (!fieldsAreValid) {
+                // Show error message if any field is null
                 Toastify({
-                    text: "Data stored successfully",
+                    text: "Please fill in all fields",
                     gravity: "top",
                     duration: 3000,
                     close: true,
                     style: {
                         width: '30%'
                     },
+                    backgroundColor: "red",
                     position: "center"
                 }).showToast();
-
-                // Refresh the page after successful submission
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                throw new Error('Failed to store data');
+                return; // Stop further execution
             }
-        } catch (error) {
-            console.error(error);
-            // Show error message
-            Toastify({
-                text: "Failed to store data",
-                gravity: "top",
-                duration: 3000,
-                close: true,
-                style: {
-                    width: '30%'
-                },
-                backgroundColor: "red",
-                position: "center"
-            }).showToast();
+
+            const obj = Object.fromEntries(formData);
+            console.log(obj);
+
+            try {
+                const res = await fetch('/lead_data', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(obj)
+                });
+                const response = await res.json();
+                console.log(response);
+
+                if (response.success) {
+                    Toastify({
+                        text: "Data stored successfully",
+                        gravity: "top",
+                        duration: 3000,
+                        close: true,
+                        style: {
+                            width: '30%'
+                        },
+                        position: "center"
+                    }).showToast();
+
+                    // Refresh the page after successful submission
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error('Failed to store data');
+                }
+            } catch (error) {
+                console.error(error);
+                // Show error message
+                Toastify({
+                    text: "Failed to store data",
+                    gravity: "top",
+                    duration: 3000,
+                    close: true,
+                    style: {
+                        width: '30%'
+                    },
+                    backgroundColor: "red",
+                    position: "center"
+                }).showToast();
+            }
         }
-    }
-</script>
+    </script>
 
 
 
@@ -334,10 +434,10 @@
             const form = document.querySelector('.mainForm');
 
             data.data.forEach(item => {
-                
+
                 const fieldHtml = `
         <div class="mb-2 col-12 col-md-5" style="position:relative">
-            <i class="delete-icon ri-close-circle-line" style="position:absolute;right:20px;top:0px;font-size:17px"></i>
+            <i class="delete-icon ri-close-fill" style="position:absolute;right:20px;top:0px;font-size:17px"></i>
             <label for="${item.divId}" class="form-label new-class">${item.labelName}</label>
                 <input type="${item.type}" class="form-control customGenrateRow" id="${item.divId}" name="${item.labelName.trim()}">
         </div>
@@ -350,7 +450,7 @@
             deleteIcons.forEach(icon => {
                 icon.addEventListener('click', function () {
                     const inputElement = this.parentElement.querySelector('input');
-                    
+
                     if (inputElement) {
                         const id = inputElement.getAttribute('id');
                         console.log("Input Element:", inputElement);
@@ -381,7 +481,7 @@
             const labelVal = document.getElementById('lableName').value;
             const labelIdElement = document.querySelector('.customGenrateRow');
             const customId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-       
+
             const labelId = customId;
 
             try {
