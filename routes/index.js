@@ -326,6 +326,8 @@ router.post("/selectoption", async (req, res) => {
         labelName :dropdownInput,
         value : dropdownInput
       })
+
+      await sequelize.query(`ALTER TABLE lead_data ADD COLUMN ${dropdownInput.replace(" ","")} VARCHAR(255)`)
       return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
       
     }catch(err){
@@ -343,13 +345,41 @@ router.get("/selectoption", async (req, res) => {
     try {
       console.log(1234567)
       const modal =  await selecteModal.findAll();
-      console.log(modal)
       return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
     } catch (error) {
       return res.status(400).json({ success: false, error: error.message });
       
     }
 })
+
+
+
+// delete modal field
+router.post("/delete-option", async (req, res) => {
+  try {
+    const id = req.query.id;
+   
+    // for remove the field to lead_data
+    const foundValue = await selecteModal.findOne({ where: { id: id } });
+    console.log(foundValue)
+    const columnName = foundValue.labelName.replace(" ", "");
+    console.log(columnName)
+    await sequelize.query(`ALTER TABLE lead_data DROP COLUMN ${columnName}`);
+
+
+    // deleting the row
+    const deleteField = await selecteModal.destroy({ where: { id: id } });
+    if (!deleteField) {
+      return res.status(400).json({ success: false, message: "Option not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Option deleted successfully" });
+  } catch (error) { 
+    console.error(error);
+    return res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 
 
 

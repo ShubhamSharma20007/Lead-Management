@@ -104,7 +104,9 @@
                                     <label for="select" class="form-label">Target Field <span
                                             class="font-w900 text-danger">*</span><i
                                             class="ri-add-circle-line ml-1 plusSelectField"
-                                            style="cursor: pointer;"></i></span></label>
+                                            style="cursor: pointer;"></i></span></span><i
+                                            class="ri-delete-bin-line trash-btn ml-2"
+                                            style="cursor: pointer;"></i></span> </label>
                                     <div class="input-section">
                                         <div class="input-group input-group-sm mb-3">
                                             <input name="inputvalue" type="text" class="form-control dropdown-input"
@@ -238,6 +240,33 @@
 
 
 
+{{!-- Delete Icon functionlity --}}
+<script>
+    const selectDropDown = document.getElementById("targetStatus");
+    const trashBtn = document.querySelector('.trash-btn');
+    let optionLabel = "";
+    
+    selectDropDown.addEventListener('change', (e) => {
+        optionLabel = e.target.value;
+    });
+    
+    trashBtn.addEventListener('click', async function() {
+        const res = await fetch(`/delete-option?id=${optionLabel}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const result = await res.json();
+        console.log(result,1212)
+        if(result.success === true){
+            location.reload()
+        }
+    });
+</script>
+
+
+
     {{!-- toggle select field --}}
     <script>
         const toggleBtn = document.querySelector('.plusSelectField')
@@ -293,7 +322,7 @@
                 const targetStatus = document.querySelector('.target-status');
                 data?.data.forEach((item) => {
                     const option = document.createElement('option');
-                    option.value = item.labelName;
+                    option.value = item.id;
                     option.textContent = item.labelName;
                     targetStatus.appendChild(option);
                 })
