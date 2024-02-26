@@ -48,7 +48,7 @@
       background-image: url(https://node.scaleedge.in/assets/images/dashboard/circle.svg) !important;
       background-position: start;
       background-size: cover !important;
-      background-repeat: no-repeat;     
+      background-repeat: no-repeat;
     }
 
     .board-item-content::-webkit-scrollbar {
@@ -81,133 +81,75 @@
           <div class="col-lg-12">
             <div class="card bg-transparent box-shadow-none border-0 ">
               <div class="drag-container"></div>
-              <div class="board-container">
+              <div class="board-container" ondrop="drop(event)" ondragover="allowDrop(event)">
                 <div class="d-flex slide-container" style="overflow-x: auto; width:100%; height:100%;gap:20px">
                   <div class="board-column todo">
                     <div class="board-column-container">
-                      <div class="board-column-header">WhatCRM (0)</div>
+                      <div class="board-column-header" data-target-status="New Lead">New Lead({{ newLeads.length }})
+                      </div>
                       <div class="board-column-content-wrapper">
                         <div class="board-column-content">
+                          {{#each newLeads}}
                           <div class="board-item">
                             <div class="board-item-content">
-                              <div class="inner-section">
-                                <input type="text" class="form-control-sm w-100 border-0 outline-0 bg-transparent h6 m-0" value="Lead Name" >
-                                <input type="text" class="form-control-sm w-100 border-0 h6 m-0 bg-transparent" name="" id="" value="Company Name">
-                                <input type="text" class="form-control-sm w-100 border-0 h6 m-0 bg-transparent" name="" value="7073830702" id="">
-                                <input type="email" name="" id="" class="form-control-sm w-100 border-0 bg-transparent h6 m-0" value="shubhamsharma20007@gmail.com" >
-                                <input type="text" class="form-control-sm w-100 border-0 h6 m-0 bg-transparent" name="" value="Lead Status " id="">
-                              
+                              <div class="inner-section" draggable="true" ondragstart="drag(event)"
+                                data-card-id="{{this.id}}" data-target-status="{{target_status}}">
+                                {{#each this.dataValues}}
+                                <p>{{@key}}: {{this}}</p>
+                                {{/each}}
                               </div>
-                              </div>
+                            </div>
                           </div>
-
+                          {{/each}}
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="board-column working">
                     <div class="board-column-container">
-                      <div class="board-column-header">New Lead (0)</div>
+                      <div class="board-column-header" data-target-status="Contact Initiation">Contact Initiation({{
+                        contactInitiation.length }})</div>
                       <div class="board-column-content-wrapper">
                         <div class="board-column-content">
+                          {{#each contactInitiation}}
                           <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>6</div>
+                            <div class="board-item-content">
+                              <div class="inner-section" draggable="true" ondragstart="drag(event)"
+                                data-card-id="{{this.id}}" data-target-status="{{target_status}}">
+                                {{#each this.dataValues}}
+                                <p>{{@key}}: {{this}}</p>
+                                {{/each}}
+                              </div>
+                            </div>
                           </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>7</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>8</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>9</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>10</div>
-                          </div>
+                          {{/each}}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="board-column done">
+                  <div class="board-column todo">
                     <div class="board-column-container">
-                      <div class="board-column-header">Contact Initiation (0)</div>
+                      <div class="board-column-header" data-target-status="Schedule Follow Up">Schedule Follow Up({{
+                        scheduleFollowUp.length }})</div>
                       <div class="board-column-content-wrapper">
                         <div class="board-column-content">
+                          {{#each scheduleFollowUp}}
                           <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>11</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>12</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>13</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>14</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>15</div>
-                          </div>
+                            <div class="board-item-content">
+                              <div class="inner-section" draggable="true" ondragstart="drag(event)"
+                                data-card-id="{{this.id}}" data-target-status="{{target_status}}">
+                                {{#each this.dataValues}}
+                                <p>{{@key}}: {{this}}</p>
+                                {{/each}}
+                              </div>
 
+                            </div>
+                          </div>
+                          {{/each}}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="board-column done">
-                    <div class="board-column-container">
-                      <div class="board-column-header">Contact Initiation (0)</div>
-                      <div class="board-column-content-wrapper">
-                        <div class="board-column-content">
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>11</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>12</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>13</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>14</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>15</div>
-                          </div>
-
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="board-column done">
-                    <div class="board-column-container">
-                      <div class="board-column-header">Contact Initiation (0)</div>
-                      <div class="board-column-content-wrapper">
-                        <div class="board-column-content">
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>11</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>12</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>13</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>14</div>
-                          </div>
-                          <div class="board-item">
-                            <div class="board-item-content"><span>Item #</span>15</div>
-                          </div>
-
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-
 
                 </div>
 
@@ -255,6 +197,33 @@
   <script src='js/new.js'></script>
   <script src="https://cdn.jsdelivr.net/npm/muuri@0.9.5/dist/muuri.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/web-animations-js@2.3.2/web-animations.min.js"></script>
+
+  <script>
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+      console.log(ev.target.children)
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+      // Find the closest drop target by traversing up the DOM tree
+      var dropTarget = ev.target.closest('.board-column-content-wrapper');
+      if (dropTarget) {
+        dropTarget.appendChild(document.getElementById(data));
+        console.log("drop");
+     
+      }
+    }
+  </script>
+
+
+
+
   <script>
     $('.select2').select2(
       {
@@ -635,7 +604,28 @@
     const columnGrids = [];
     let boardGrid;
 
-    // Init the column grids so we can drag those items around.
+    // Function to update target status
+    async function updateTargetStatus(cardId, newTargetStatus) {
+      try {
+        const response = await fetch('/updateTargetStatus', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            cardId: cardId,
+            newTargetStatus: newTargetStatus
+          })
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update target status');
+        }
+        // Optionally handle success response
+      } catch (error) {
+        console.error('Error updating target status:', error);
+      }
+    }
+
     itemContainers.forEach(function (container) {
       const grid = new Muuri(container, {
         items: '.board-item',
@@ -653,14 +643,7 @@
           contentZooming: 'none'
         },
         dragStartPredicate: function (item, e) {
-          // On touch, let's allow dragging if the delay between
-          // touchstart and touchmove event is 250ms or more.
-          // Note that we need to explicitly prevent scrolling
-          // after we start the drag delayed.
           if (e.pointerType === 'touch') {
-            // On first event (touchstart) we need to store the
-            // drag start data and bind listeners for touchmove
-            // and contextmenu.
             if (e.isFirst) {
               const contextMenuListener = e => e.preventDefault();
               const touchMoveListener = (e) => {
@@ -678,8 +661,6 @@
                   }
                 }
               };
-
-              // Store drag start data.
               dragStartData.set(item, {
                 dragAllowed: undefined,
                 startTimeStamp: e.srcEvent.timeStamp,
@@ -688,16 +669,9 @@
               });
               container.parentNode.addEventListener('touchmove', touchMoveListener, { passive: false, capture: true });
               window.addEventListener('touchmove', touchMoveListener, { passive: false, capture: true });
-
-              // Prevent context menu popping up.
               item.getElement().addEventListener('contextmenu', contextMenuListener);
-
-              // Let's keep the drag start predicate in "pending" state.
               return undefined;
             }
-
-            // On final event (touchend/touchcancel) we just need to
-            // remove the listeners and delete the item's drag data.
             if (e.isFinal) {
               const data = dragStartData.get(item);
               if (data) {
@@ -708,15 +682,9 @@
               }
               return undefined;
             }
-
-            // On move (touchmove) event let's check the drag state from
-            // our drag data and return it for the predicate.
             const data = dragStartData.get(item);
             return data ? data.dragAllowed : undefined;
           }
-
-          // On mouse let's allow starting drag immediately
-          // if mouse's left button is pressed down.
           if (e.isFirst && e.srcEvent.button) {
             return false;
           } else {
@@ -750,12 +718,46 @@
       columnGrids.push(grid);
     });
 
-    // Init board grid so we can drag those columns around.
     boardGrid = new Muuri('.board', {
       dragEnabled: true,
       dragHandle: '.board-column-header'
     });
+    console.log("Attaching dragReleaseEnd event listener to boardGrid...");
+    boardGrid.on('dragReleaseEnd', async function (item, event) {
+      console.log("dragReleaseEnd event triggered!");
+      // Determine if the card is dropped into a different container
+      const sourceContainer = item.getGrid().getElement().parentNode;
+      const destinationContainer = event.originalEvent.target.closest('.board-column-content');
+
+      console.log("Source container:", sourceContainer);
+      console.log("Destination container:", destinationContainer);
+
+      if (sourceContainer !== destinationContainer) {
+        try {
+          // Extract necessary information (e.g., card ID and target status)
+          const cardIdElement = item.getElement().querySelector('.inner-section');
+          console.log("Card ID element:", cardIdElement);
+          const cardId = cardIdElement.getAttribute('id');
+          console.log("Card ID:", cardId);
+
+
+          const newTargetStatus = destinationContainer.getAttribute('data-target-status');
+          console.log("New target status:", newTargetStatus);
+
+          // Update target status
+          await updateTargetStatus(cardId, newTargetStatus);
+          console.log('Target status updated successfully!');
+        } catch (error) {
+          console.error('Error updating target status:', error);
+        }
+      }
+    });
+
+
   </script>
+
+
+
 
 
 </body>

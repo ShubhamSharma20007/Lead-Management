@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 const { DataTypes } = require("sequelize");
 const { v4: uuidv4 } = require('uuid');
 const { Op } = require('sequelize');
-const randomString =  require('randomstring')
+const randomString = require('randomstring')
 const nodemailer = require('nodemailer');
 const isAuth = require('../Middlewares/isAuth');
 const selecteModal = require("../models/TargetSelectModel")
@@ -59,9 +59,33 @@ router.get("/signup", (req, res) => {
 
 
 //lead Managment get request
-router.get("/leadManagement", isAuth, function (req, res, next) {
-  res.render("leadManagement", { title: "scaleedge" });
+router.get("/leadManagement", isAuth, async function (req, res, next) {
+  try {
+    // Fetch data for different target statuses
+    const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
+    const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
+    const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow-up' } });
+
+    // Render the page with lead data
+    res.render('leadManagement', { newLeads, contactInitiation, scheduleFollowUp });
+  } catch (error) {
+    console.error('Error fetching lead data:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
+
+router.post('/updateTargetStatus', async (req, res) => {
+  const { cardId, newTargetStatus } = req.body;
+  try {
+      // Update the target_status in the LeadData table based on the cardId
+      await LeadData.update({ target_status: newTargetStatus }, { where: { id: cardId } });
+      res.sendStatus(200); // Send success response
+  } catch (error) {
+      console.error('Error updating target status:', error);
+      res.status(500).send('Internal Server Error'); // Send error response
+  }
+});
+
 
 // logout get request
 router.get("/logout", (req, res) => {
@@ -158,7 +182,8 @@ router.post('/lead_data', function (req, res) {
     'leadName': 'lead_name',
     'contactNum': 'number',
     'contactemail': 'email',
-    'selectstatus': 'lead_status'
+    'selectstatus': 'lead_status',
+    'targetStatus': ' target_status'
   };
 
   // Construct SQL query to insert data into lead_data table
@@ -204,42 +229,42 @@ router.post('/lead_data', function (req, res) {
 
 const otpMap = new Map()
 router.post('/send-otp', (req, res) => {
-    const email = req.body.email;
+  const email = req.body.email;
 
-    // genrate the a random OTP
-    const otp = randomString.generate({
-      length:4,
-      charset: 'numeric'
-    });
+  // genrate the a random OTP
+  const otp = randomString.generate({
+    length: 4,
+    charset: 'numeric'
+  });
 
-    otpMap.set(email,otp)
-    // send the OTP to email 
-    const transporter  = nodemailer.createTransport({
-      service: 'gmail',
-      host:"smtp.gmail.com",
-      port:465,
-      secure:true,
-      auth:{
-        user:"shubhamsharma20007@gmail.com",
-        pass:"oewgbwrftpzhteii"
-      }
-    })
-    const mailOptions={
-      from :"shubhamsharma20007@gmail.com",
-      to :email,
-      subject :"OTP Verification",
-      text:"Your OTP is "+otp
+  otpMap.set(email, otp)
+  // send the OTP to email 
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "shubhamsharma20007@gmail.com",
+      pass: "oewgbwrftpzhteii"
     }
+  })
+  const mailOptions = {
+    from: "shubhamsharma20007@gmail.com",
+    to: email,
+    subject: "OTP Verification",
+    text: "Your OTP is " + otp
+  }
 
-    transporter.sendMail(mailOptions,(error,info)=>{
-      if(error){
-        console.error('Error sending email',error)
-      }
-      else{
-        console.log('Email sent:',info.response)
-        res.status(200).json({message:"OTP sent successfully",otp: otp,success:true})
-      }
-    })
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email', error)
+    }
+    else {
+      console.log('Email sent:', info.response)
+      res.status(200).json({ message: "OTP sent successfully", otp: otp, success: true })
+    }
+  })
 
 
 })
@@ -248,12 +273,12 @@ router.post('/send-otp', (req, res) => {
 // POST : /otp-value
 
 router.post('/otp-value', (req, res) => {
-    const {inputOne,inputSecond,inputThird,inputFour} = req.body;
-    // merge the data 
-    const str = `${inputOne}${inputSecond}${inputThird}${inputFour}`;
-    const lastValue = str.slice(-1); // Extract the last 4 characters
-    console.log(lastValue);
-    
+  const { inputOne, inputSecond, inputThird, inputFour } = req.body;
+  // merge the data 
+  const str = `${inputOne}${inputSecond}${inputThird}${inputFour}`;
+  const lastValue = str.slice(-1); // Extract the last 4 characters
+  console.log(lastValue);
+
 })
 
 
@@ -262,49 +287,49 @@ router.post('/otp-value', (req, res) => {
 router.post("/signup", async (req, res) => {
 
   try {
-      const email = req.body.email;
-      const enteredOtp = req.body.otp;
-      console.log(enteredOtp)
-      const storedOtp = otpMap.get(email);
-      console.log(storedOtp)
-      if (enteredOtp === storedOtp) {
-        otpMap.delete(email);
-        const { username, number, password, confirmPassword } = req.body;
+    const email = req.body.email;
+    const enteredOtp = req.body.otp;
+    console.log(enteredOtp)
+    const storedOtp = otpMap.get(email);
+    console.log(storedOtp)
+    if (enteredOtp === storedOtp) {
+      otpMap.delete(email);
+      const { username, number, password, confirmPassword } = req.body;
 
-        if (!username || !email || !number || !password || !confirmPassword) {
-          return res.status(400).json({ error: "Please add all the fields" });
-        }
-
-        // check if the password matches the confirm password
-        if (password !== confirmPassword) {
-          return res.status(400).json({ error: "Password and Confirm Password do not match" });
-        }
-
-        // check the number length
-        if (number.length !== 10) {
-          return res.status(400).json({ error: "Please enter a valid 10 digit number", success: false });
-        }
-
-        // check if the user already exists
-        const userExist = await userModel.findOne({ where: { email } });
-        if (userExist) {
-          return res.status(400).json({ error: "User already exists" });
-        }
-
-        // hash the password
-        const bcryptPassword = await bcrypt.hash(password, 10);
-
-        // create a new user
-        const uniqueId = `scaleedge${uuidv4().split("-")[1]}`;
-        const newUser = await userModel.create({ username, email, number, password: bcryptPassword, employee_id: uniqueId });
-
-        return res.status(200).json({ success: true, message: "User created successfully", user: newUser });
-      } else {
-        return res.status(400).json({ success: false, error: "Invalid OTP" });
+      if (!username || !email || !number || !password || !confirmPassword) {
+        return res.status(400).json({ error: "Please add all the fields" });
       }
-    } catch (error) {
-      return res.status(400).json({ success: false, error: error.message });
+
+      // check if the password matches the confirm password
+      if (password !== confirmPassword) {
+        return res.status(400).json({ error: "Password and Confirm Password do not match" });
+      }
+
+      // check the number length
+      if (number.length !== 10) {
+        return res.status(400).json({ error: "Please enter a valid 10 digit number", success: false });
+      }
+
+      // check if the user already exists
+      const userExist = await userModel.findOne({ where: { email } });
+      if (userExist) {
+        return res.status(400).json({ error: "User already exists" });
+      }
+
+      // hash the password
+      const bcryptPassword = await bcrypt.hash(password, 10);
+
+      // create a new user
+      const uniqueId = `scaleedge${uuidv4().split("-")[1]}`;
+      const newUser = await userModel.create({ username, email, number, password: bcryptPassword, employee_id: uniqueId });
+
+      return res.status(200).json({ success: true, message: "User created successfully", user: newUser });
+    } else {
+      return res.status(400).json({ success: false, error: "Invalid OTP" });
     }
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 
@@ -316,24 +341,24 @@ router.post("/signup", async (req, res) => {
 // model  : SelectDataModal
 
 router.post("/selectoption", async (req, res) => {
-    try {
-      const { dropdownInput } = req.body;
-      if(!dropdownInput){
-        return res.status(400).json({ error: "Please enter a valid input" });
-      }
-      console.log(dropdownInput)
-      const modal = await selecteModal.create({
-        labelName :dropdownInput,
-        value : dropdownInput
-      })
-
-      await sequelize.query(`ALTER TABLE lead_data ADD COLUMN ${dropdownInput.replace(" ","")} VARCHAR(255)`)
-      return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
-      
-    }catch(err){
-      return res.status(400).json({ success: false, error: err.message });
-
+  try {
+    const { dropdownInput } = req.body;
+    if (!dropdownInput) {
+      return res.status(400).json({ error: "Please enter a valid input" });
     }
+    console.log(dropdownInput)
+    const modal = await selecteModal.create({
+      labelName: dropdownInput,
+      value: dropdownInput
+    })
+
+    // await sequelize.query(`ALTER TABLE lead_data ADD COLUMN ${dropdownInput.replace(" ","")} VARCHAR(255)`)
+    return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
+
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message });
+
+  }
 })
 
 // select dropdown router 
@@ -342,14 +367,14 @@ router.post("/selectoption", async (req, res) => {
 // model  : SelectDataModal
 
 router.get("/selectoption", async (req, res) => {
-    try {
-      console.log(1234567)
-      const modal =  await selecteModal.findAll();
-      return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
-    } catch (error) {
-      return res.status(400).json({ success: false, error: error.message });
-      
-    }
+  try {
+    console.log(1234567)
+    const modal = await selecteModal.findAll();
+    return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
+  } catch (error) {
+    return res.status(400).json({ success: false, error: error.message });
+
+  }
 })
 
 
@@ -357,28 +382,27 @@ router.get("/selectoption", async (req, res) => {
 // delete modal field
 router.post("/delete-option", async (req, res) => {
   try {
-    const id = req.query.id;
-   
-    // for remove the field to lead_data
-    const foundValue = await selecteModal.findOne({ where: { id: id } });
-    console.log(foundValue)
-    const columnName = foundValue.labelName.replace(" ", "");
-    console.log(columnName)
-    await sequelize.query(`ALTER TABLE lead_data DROP COLUMN ${columnName}`);
+    const id = parseInt(req.query.id); // Parse to integer
+    console.log(id)
 
+    // Check if id is NaN (not a number) or less than 1
+    if (isNaN(id) || id < 1) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
 
-    // deleting the row
+    // Deleting the row
     const deleteField = await selecteModal.destroy({ where: { id: id } });
     if (!deleteField) {
       return res.status(400).json({ success: false, message: "Option not found" });
     }
 
     return res.status(200).json({ success: true, message: "Option deleted successfully" });
-  } catch (error) { 
+  } catch (error) {
     console.error(error);
     return res.status(400).json({ success: false, error: error.message });
   }
 });
+
 
 
 

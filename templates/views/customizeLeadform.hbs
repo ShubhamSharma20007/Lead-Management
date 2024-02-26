@@ -109,8 +109,8 @@
                                             style="cursor: pointer;"></i></span> </label>
                                     <div class="input-section">
                                         <div class="input-group input-group-sm mb-3">
-                                            <input name="inputvalue" type="text" class="form-control dropdown-input"
-                                                aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                                            <input type="text" class="form-control dropdown-input" aria-label="Small"
+                                                aria-describedby="inputGroup-sizing-sm">
                                             <div class="input-group-prepend">
                                                 <span
                                                     class="input-group-text bg-primary dropdown-input-add-btn  text-white "
@@ -240,30 +240,40 @@
 
 
 
-{{!-- Delete Icon functionlity --}}
-<script>
-    const selectDropDown = document.getElementById("targetStatus");
-    const trashBtn = document.querySelector('.trash-btn');
-    let optionLabel = "";
-    
-    selectDropDown.addEventListener('change', (e) => {
-        optionLabel = e.target.value;
-    });
-    
-    trashBtn.addEventListener('click', async function() {
-        const res = await fetch(`/delete-option?id=${optionLabel}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
+    {{!-- Delete Icon functionlity --}}
+    <script>
+        const selectDropDown = document.getElementById("targetStatus");
+        const trashBtn = document.querySelector('.trash-btn');
+        let optionId = ""; // Changed variable name to optionId for clarity
+
+        selectDropDown.addEventListener('change', (e) => {
+            optionId = e.target.options[e.target.selectedIndex].getAttribute('data_id');
+            console.log(optionId);
+        });
+
+        trashBtn.addEventListener('click', async function () {
+            if (!optionId) {
+                console.error('No option selected.');
+                return;
+            }
+            try {
+                const res = await fetch(`/delete-option?id=${optionId}`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await res.json();
+                console.log(result, 1212)
+                if (result.success === true) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
             }
         });
-        const result = await res.json();
-        console.log(result,1212)
-        if(result.success === true){
-            location.reload()
-        }
-    });
-</script>
+    </script>
+
 
 
 
@@ -303,7 +313,7 @@
                 if (successData.success === true) {
                     location.reload()
                 }
-                else{
+                else {
                     alert(successData.error)
                 }
             }
@@ -322,14 +332,19 @@
                 const targetStatus = document.querySelector('.target-status');
                 data?.data.forEach((item) => {
                     const option = document.createElement('option');
-                    option.value = item.id;
+                    option.value = item.labelName;
                     option.textContent = item.labelName;
+
+                    // Set custom attribute to store item.id
+                    option.setAttribute('data_id', item.id);
+
                     targetStatus.appendChild(option);
                 })
             } catch (error) {
                 console.error(error);
             }
         });
+
 
     </script>
 

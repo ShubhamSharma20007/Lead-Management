@@ -27,7 +27,12 @@ const LeadData = sequelize.define('leadData', {
     lead_status: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    target_status: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+
 }, {
     timestamps: false,
     tableName: 'lead_data'
