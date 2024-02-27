@@ -64,7 +64,7 @@ router.get("/leadManagement", isAuth, async function (req, res, next) {
     // Fetch data for different target statuses
     const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
     const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
-    const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow-up' } });
+    const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow Up' } });
 
     // Render the page with lead data
     res.render('leadManagement', { newLeads, contactInitiation, scheduleFollowUp });
@@ -405,6 +405,39 @@ router.post("/delete-option", async (req, res) => {
 
 
 
+router.get("/demo", async function (req, res, next) {
+  try {
+    // Fetch data for different target statuses
+    const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
+    const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
+    const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow Up' } });
+
+    // Render the page with lead data
+    res.render('demo', { newLeads, contactInitiation, scheduleFollowUp });
+  } catch (error) {
+    console.error('Error fetching lead data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Update lead status route
+router.put("/updateLeadStatus/:id", async function (req, res, next) {
+  const { id } = req.params;
+  const { target_status } = req.body;
+
+  try {
+      const lead = await LeadData.findByPk(id);
+      if (!lead) {
+          return res.status(404).send('Lead not found');
+      }
+      lead.target_status = target_status;
+      await lead.save();
+      res.sendStatus(200); // or you can send some other response
+  } catch (error) {
+      console.error('Error updating lead status:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
 
 
 module.exports = router;
