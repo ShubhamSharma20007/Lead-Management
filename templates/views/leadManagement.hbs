@@ -88,12 +88,20 @@
             color: #425275;
         }
 
+
+
         .plan .inner {
             align-items: center;
             padding: 20px;
             background-color: #ecf0ff;
             border-radius: 12px;
-            position: relative;
+
+                {
+                    {
+                    !-- position: relative;
+                    --
+                }
+            }
         }
 
         .plan .pricing {
@@ -190,6 +198,7 @@
         .plan .button:focus {
             background-color: #4133B7;
         }
+       
     </style>
 </head>
 
@@ -365,6 +374,7 @@
 
     <script>
         function allowDrop(ev) {
+
             ev.preventDefault();
         }
 
@@ -374,10 +384,30 @@
         }
 
         function drop(ev) {
+
             ev.preventDefault();
+     
             var data = ev.dataTransfer.getData("text");
             var draggedElement = document.getElementById(data);
-            ev.target.appendChild(draggedElement);
+            var target = ev.target.closest('.board-item');
+            var container = ev.target.closest('.board-column-content');
+
+            if (target) {
+                // Determine if the dragged card is above or below the target card
+                var rect = target.getBoundingClientRect();
+                var mouseY = ev.clientY;
+                var isBelow = mouseY > rect.top + rect.height / 2;
+
+                // Insert the dragged card before or after the target card
+                if (isBelow) {
+                    container.insertBefore(draggedElement, target.nextElementSibling);
+                } else {
+                    container.insertBefore(draggedElement, target);
+                }
+            } else {
+                // If there is no target card, simply append the dragged card to the container
+                container.appendChild(draggedElement);
+            }
 
             // Get the unique identifier for the lead
             var leadId = draggedElement.getAttribute('data-lead-id');
@@ -386,6 +416,7 @@
             // Determine the target_status based on the container ID
             var targetStatus;
             var containerId = findContainerId(ev.target);
+
             console.log('Container ID:', containerId);
 
             switch (containerId) {
@@ -425,6 +456,7 @@
                 });
         }
 
+
         function findContainerId(element) {
             // Traverse up the DOM tree until finding an element with an ID
             while (element && !element.id) {
@@ -435,211 +467,10 @@
 
     </script>
 
-    <script>
-        $('.select2').select2(
-            {
-                theme: 'bootstrap4',
-            });
-        $('.select2-multi').select2(
-            {
-                multiple: true,
-                theme: 'bootstrap4',
-            });
-        $('.drgpicker').daterangepicker(
-            {
-                singleDatePicker: true,
-                timePicker: false,
-                showDropdowns: true,
-                locale:
-                {
-                    format: 'MM/DD/YYYY'
-                }
-            });
-        $('.time-input').timepicker(
-            {
-                'scrollDefault': 'now',
-                'zindex': '9999' /* fix modal open */
-            });
-        /** date range picker */
-        if ($('.datetimes').length) {
-            $('.datetimes').daterangepicker(
-                {
-                    timePicker: true,
-                    startDate: moment().startOf('hour'),
-                    endDate: moment().startOf('hour').add(32, 'hour'),
-                    locale:
-                    {
-                        format: 'M/DD hh:mm A'
-                    }
-                });
-        }
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-
-        function cb(start, end) {
-            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-        }
-        $('#reportrange').daterangepicker(
-            {
-                startDate: start,
-                endDate: end,
-                ranges:
-                {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                }
-            }, cb);
-        cb(start, end);
-        $('.input-placeholder').mask("00/00/0000",
-            {
-                placeholder: "__/__/____"
-            });
-        $('.input-zip').mask('00000-000',
-            {
-                placeholder: "____-___"
-            });
-        $('.input-money').mask("#.##0,00",
-            {
-                reverse: true
-            });
-        $('.input-phoneus').mask('(000) 000-0000');
-        $('.input-mixed').mask('AAA 000-S0S');
-        $('.input-ip').mask('0ZZ.0ZZ.0ZZ.0ZZ',
-            {
-                translation:
-                {
-                    'Z':
-                    {
-                        pattern: /[0-9]/,
-                        optional: true
-                    }
-                },
-                placeholder: "___.___.___.___"
-            });
-        // editor
-        var editor = document.getElementById('editor');
-        if (editor) {
-            var toolbarOptions = [
-                [
-                    {
-                        'font': []
-                    }],
-                [
-                    {
-                        'header': [1, 2, 3, 4, 5, 6, false]
-                    }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [
-                    {
-                        'header': 1
-                    },
-                    {
-                        'header': 2
-                    }],
-                [
-                    {
-                        'list': 'ordered'
-                    },
-                    {
-                        'list': 'bullet'
-                    }],
-                [
-                    {
-                        'script': 'sub'
-                    },
-                    {
-                        'script': 'super'
-                    }],
-                [
-                    {
-                        'indent': '-1'
-                    },
-                    {
-                        'indent': '+1'
-                    }], // outdent/indent
-                [
-                    {
-                        'direction': 'rtl'
-                    }], // text direction
-                [
-                    {
-                        'color': []
-                    },
-                    {
-                        'background': []
-                    }], // dropdown with defaults from theme
-                [
-                    {
-                        'align': []
-                    }],
-                ['clean'] // remove formatting button
-            ];
-            var quill = new Quill(editor,
-                {
-                    modules:
-                    {
-                        toolbar: toolbarOptions
-                    },
-                    theme: 'snow'
-                });
-        }
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
-    </script>
-    <script>
-        var uptarg = document.getElementById('drag-drop-area');
-        if (uptarg) {
-            var uppy = Uppy.Core().use(Uppy.Dashboard,
-                {
-                    inline: true,
-                    target: uptarg,
-                    proudlyDisplayPoweredByUppy: false,
-                    theme: 'dark',
-                    width: 770,
-                    height: 210,
-                    plugins: ['Webcam']
-                }).use(Uppy.Tus,
-                    {
-                        endpoint: 'https://master.tus.io/files/'
-                    });
-            uppy.on('complete', (result) => {
-                console.log('Upload complete! We’ve uploaded these files:', result.successful)
-            });
-        }
-    </script>
     <script src="js/apps.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-56159088-1');
-    </script>
 
     <style>
         .drag-container {
@@ -703,12 +534,7 @@
         .board-column {
             width: 280px;
 
-                {
-                    {
-                    !-- transform: translate(0, 0) !;
-                    --
-                }
-            }
+
         }
 
         .board-column-header {
@@ -724,18 +550,6 @@
             font-weight: bold;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-        }
-
-            {
-                {
-                !-- @media (max-width: 600px) {
-                    .board-column-header {
-                        text-indent: -1000px;
-                    }
-                }
-
-                --
-            }
         }
 
         .board-column.todo .board-column-header {
@@ -767,12 +581,14 @@
         .board-column-content {
             position: relative;
             min-height: 100%;
+
         }
 
         .board-item {
-            position: absolute;
+            position: relative;
             width: calc(100% - 16px);
             margin: 8px;
+
         }
 
         .board-item.muuri-item-releasing {
