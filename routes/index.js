@@ -13,6 +13,7 @@ const randomString = require('randomstring')
 const nodemailer = require('nodemailer');
 const isAuth = require('../Middlewares/isAuth');
 const selecteModal = require("../models/TargetSelectModel")
+const DashboardFieldModal = require("../models/DashBoardFieldName")
 
 // login get request
 router.get("/", function (req, res, next) {
@@ -438,6 +439,27 @@ router.put("/updateLeadStatus/:id", async function (req, res, next) {
       res.status(500).send('Internal Server Error');
   }
 });
+
+
+// custom dash boardfield
+// POST : /customfield
+
+router.post('/customfield', async (req, res) => {
+  
+  try {  
+    const {value} = req.body;
+    if(!value){
+      return res.status(400).json({error: "Field name is required"});
+    }
+    const insertData = await DashboardFieldModal.create({ fieldName: value });
+    await insertData.update({ containerId: `container${insertData.Id}`});
+    return res.status(200).json({ message: "Field added successfully", data: insertData });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+});
+
 
 
 module.exports = router;
