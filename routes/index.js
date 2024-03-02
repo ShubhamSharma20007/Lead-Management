@@ -60,20 +60,42 @@ router.get("/signup", (req, res) => {
 
 
 //lead Managment get request
-router.get("/leadManagement", isAuth, async function (req, res, next) {
+router.get('/leadManagement', isAuth, async function (req, res, next) {
   try {
-    // Fetch data for different target statuses
-    const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
-    const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
-    const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow Up' } });
+      const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
+      const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
+      const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow Up' } });
 
-    // Render the page with lead data
-    res.render('leadManagement', { newLeads, contactInitiation, scheduleFollowUp });
+      // Fetch other containers dynamically based on unique target statuses
+      const otherContainers = await DashboardFieldModal.findAll({
+          where: {
+              fieldName: {
+                  [Op.notIn]: ['New Lead', 'Contact Initiation', 'Schedule Follow Up']
+              }
+          }
+      });
+
+      res.render('leadManagement', { newLeads, contactInitiation, scheduleFollowUp, otherContainers });
   } catch (error) {
-    console.error('Error fetching lead data:', error);
-    res.status(500).send('Internal Server Error');
+      console.error('Error fetching lead data:', error);
+      res.status(500).send('Internal Server Error');
   }
 });
+
+router.get('/fetchDataForContainer/:fieldName', async (req, res) => {
+  const { fieldName } = req.params;
+  try {
+      // Fetch data from LeadData table based on target_status
+      const leads = await LeadData.findAll({ where: { target_status: fieldName } });
+      // console.log('Fetched data for', fieldName, ':', leads); // Log fetched data
+      res.status(200).json(leads);
+  } catch (error) {
+      console.error(`Error fetching data for ${fieldName}:`, error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 router.post('/updateTargetStatus', async (req, res) => {
   const { cardId, newTargetStatus } = req.body;
@@ -369,14 +391,23 @@ router.post("/selectoption", async (req, res) => {
 
 router.get("/selectoption", async (req, res) => {
   try {
-    console.log(1234567)
-    const modal = await selecteModal.findAll();
-    return res.status(200).json({ success: true, message: "Data inserted successfully", data: modal });
+    // Assuming DashboardFieldModal is imported and available in your code
+    const [selecteModalData, dashboardFieldData] = await Promise.all([
+      selecteModal.findAll(),
+      DashboardFieldModal.findAll()
+    ]);
+
+    return res.status(200).json({ 
+      success: true, 
+      message: "Data retrieved successfully", 
+      selecteModalData: selecteModalData,
+      dashboardFieldData: dashboardFieldData
+    });
   } catch (error) {
     return res.status(400).json({ success: false, error: error.message });
-
   }
-})
+});
+
 
 
 
@@ -412,8 +443,6 @@ router.get("/demo", async function (req, res, next) {
     const newLeads = await LeadData.findAll({ where: { target_status: 'New Lead' } });
     const contactInitiation = await LeadData.findAll({ where: { target_status: 'Contact Initiation' } });
     const scheduleFollowUp = await LeadData.findAll({ where: { target_status: 'Schedule Follow Up' } });
-
-    // Render the page with lead data
     res.render('demo', { newLeads, contactInitiation, scheduleFollowUp });
   } catch (error) {
     console.error('Error fetching lead data:', error);
@@ -424,16 +453,16 @@ router.get("/demo", async function (req, res, next) {
 // Update lead status route
 router.put("/updateLeadStatus/:id", async function (req, res, next) {
   const { id } = req.params;
-  const { target_status } = req.body;
+  const { fieldName } = req.body;
 
   try {
       const lead = await LeadData.findByPk(id);
       if (!lead) {
           return res.status(404).send('Lead not found');
       }
-      lead.target_status = target_status;
+      lead.target_status = fieldName;
       await lead.save();
-      res.sendStatus(200); // or you can send some other response
+      res.sendStatus(200);
   } catch (error) {
       console.error('Error updating lead status:', error);
       res.status(500).send('Internal Server Error');
@@ -445,20 +474,43 @@ router.put("/updateLeadStatus/:id", async function (req, res, next) {
 // POST : /customfield
 
 router.post('/customfield', async (req, res) => {
-  
   try {  
-    const {value} = req.body;
-    if(!value){
-      return res.status(400).json({error: "Field name is required"});
+    const { value } = req.body;
+    if (!value) {
+      return res.status(400).json({ error: "Field name is required" });
     }
-    const insertData = await DashboardFieldModal.create({ fieldName: value });
-    await insertData.update({ containerId: `container${insertData.Id}`});
+    
+    // Get the maximum container ID from the database
+    const maxContainerId = await DashboardFieldModal.max('containerId');
+    let nextContainerId;
+    
+    // If maxContainerId is null, start from container4, else increment it by 1
+    if (maxContainerId === null) {
+      nextContainerId = 'container4';
+    } else {
+      const containerNumber = parseInt(maxContainerId.replace('container', ''));
+      nextContainerId = `container${containerNumber + 1}`;
+    }
+    
+    const insertData = await DashboardFieldModal.create({ fieldName: value, containerId: nextContainerId });
     return res.status(200).json({ message: "Field added successfully", data: insertData });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Internal server error" });
   }
-
 });
+
+
+router.get('/fetchcontainers', async (req, res) => {
+  try {
+    const containers = await DashboardFieldModal.findAll();
+    res.status(200).json({ containers });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 
 
